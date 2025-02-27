@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="login()">Login</button>
+        <p id="error" class="error"></p>
+    </div>
+
+    <script>
+        function login() {
+            const name = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const errorElement = document.getElementById("error");
+
+            errorElement.innerText = ""; // Clear previous errors
+
+            fetch("http://localhost:8080/api/users/check", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, password })
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    throw new Error("Invalid username or password!");
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Welcome, " + data.name + "!");
+            })
+            .catch(error => {
+                errorElement.innerText = error.message;
+            });
+        }
+    </script>
+
+</body>
+</html>

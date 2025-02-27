@@ -1,9 +1,11 @@
 package com.b1.demo.service;
-import com.b1.demo.entity.*;
-import com.b1.demo.repository.*;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.b1.demo.entity.CustomerContactInformation;
+import com.b1.demo.repository.CustomerContactInformationRepository;
 
 
 @Service
