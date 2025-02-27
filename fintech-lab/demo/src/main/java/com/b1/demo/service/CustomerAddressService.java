@@ -1,10 +1,12 @@
 package com.b1.demo.service;
 
-import com.b1.demo.entity.*;
-import com.b1.demo.repository.*;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.b1.demo.entity.CustomerAddress;
+import com.b1.demo.repository.CustomerAddressRepository;
 
 @Service
 public class CustomerAddressService {
@@ -18,4 +20,9 @@ public class CustomerAddressService {
     public List<CustomerAddress> getAllCustomerAddresses() {
         return customerAddressRepository.findAll();
     }
+
+    public CustomerAddress updateCustomerAddress(CustomerAddress customerAddress) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

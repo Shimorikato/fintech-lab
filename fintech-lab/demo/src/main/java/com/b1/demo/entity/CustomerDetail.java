@@ -1,9 +1,16 @@
 package com.b1.demo.entity;
 
-import com.b1.demo.entity.CustomerAddress;
-import com.b1.demo.entity.CustomerIdentification;
-import jakarta.persistence.*;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "CustomerDetail")
@@ -19,13 +26,16 @@ public class CustomerDetail {
     private String email;
     private String phoneNumber;
 
-    // One-to-Many relationship with CustomerIdentification
-    @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL)
-    private List<CustomerIdentification> identifications;
-
     // One-to-Many relationship with CustomerAddress
-    @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL)
+    @JsonManagedReference 
+    @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerAddress> addresses;
+
+     // One-to-Many relationship with CustomerIdentification
+    @JsonManagedReference 
+     @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerIdentification> identifications;
+    
 
     // Getters and Setters...
 
