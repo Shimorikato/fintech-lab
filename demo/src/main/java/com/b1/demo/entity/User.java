@@ -14,10 +14,23 @@ private String password;
 private int amount;
 private int bankId;
 
+
 // Getters and Setters
 
 public String getName() {
 	return name;
+}
+public int getAmount() {
+    return amount;
+}
+public void setAmount(int amount) {
+    this.amount = amount;
+}
+public int getBankId() {
+    return bankId;
+}
+public void setBankId(int bankId) {
+    this.bankId = bankId;
 }
 public void setName(String name) {
 	this.name = name;
@@ -36,22 +49,6 @@ public void setName(String name) {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public int getBankId() {
-        return bankId;
-    }
-
-    public void setBankId(int bankId) {
-        this.bankId = bankId;
     }
 
 
