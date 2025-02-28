@@ -11,7 +11,7 @@ public class User {
  private Long id;
 private String name;
 private String password;
-private int amount;
+private long  amount;
 private int bankId;
 
 
@@ -20,7 +20,7 @@ private int bankId;
 public String getName() {
 	return name;
 }
-public int getAmount() {
+public long  getAmount() {
     return amount;
 }
 public void setAmount(int amount) {
