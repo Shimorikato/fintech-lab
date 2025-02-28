@@ -12,7 +12,7 @@ import com.b1.demo.entity.CustomerIdentification;
 import com.b1.demo.service.CustomerIdentificationService;
 
 @RestController
-@RequestMapping("/Customer/identifier")
+    @RequestMapping("/customer/identifier")
 public class CustomerIdentificationController {
 
     @Autowired

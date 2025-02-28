@@ -1,11 +1,19 @@
 package com.b1.demo.entity;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "CustomerDetail")
 public class CustomerDetail {
 
     @Id
@@ -13,43 +21,30 @@ public class CustomerDetail {
     private Long id;
 
     private String firstName;
-
     private String middleName;
-  
-
-	private String lastName;
-
-   
+    private String lastName;
     private String email;
-
     private String phoneNumber;
 
-   // private LocalDateTime createdAt;
+    // One-to-Many relationship with CustomerAddress
+    @JsonManagedReference 
+    @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerAddress> addresses;
 
-    // Getters and Setters
+     // One-to-Many relationship with CustomerIdentification
+    @JsonManagedReference 
+     @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerIdentification> identifications;
+    
 
-    public Long getId() {
-        return id;
+    // Getters and Setters...
+
+    public List<CustomerAddress> getAddresses() {
+        return addresses;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setAddresses(List<CustomerAddress> addresses) {
+        this.addresses = addresses;
     }
 
     public String getEmail() {
@@ -60,6 +55,46 @@ public class CustomerDetail {
         this.email = email;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<CustomerIdentification> getIdentifications() {
+        return identifications;
+    }
+
+    public void setIdentifications(List<CustomerIdentification> identifications) {
+        this.identifications = identifications;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -67,18 +102,4 @@ public class CustomerDetail {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    public String getMiddleName() {
-  		return middleName;
-  	}
-
-  	public void setMiddleName(String middleName) {
-  		this.middleName = middleName;
-  	}
-  //  public LocalDateTime getCreatedAt() {
-  //      return createdAt;
-  //  }
-
-  //  public void setCreatedAt(LocalDateTime createdAt) {
-  //      this.createdAt = createdAt;
- //   }
 }

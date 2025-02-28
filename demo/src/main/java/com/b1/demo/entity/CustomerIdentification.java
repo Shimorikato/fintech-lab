@@ -1,50 +1,34 @@
 package com.b1.demo.entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
 @Entity
 @Table(name = "CustomerIdentification")
 public class CustomerIdentification {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "CustomerIdentifier", referencedColumnName = "id")
-    private CustomerDetail customerDetail;
+	@Column(name = "customer_identification_type", length = 100, nullable = false)
+	private String customerIdentificationType;
 
-    @Column(name = "CustomerIdentificationType", length = 100)
-    private String customerIdentificationType;
+	@Column(name = "customer_identification_item", length = 100, nullable = false)
+	private String customerIdentificationItem;
 
-    @Column(name = "CustomerIdentificationItem", length = 100)
-    private String customerIdentificationItem;
+	@ManyToOne
+	@JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
+	@JsonBackReference  // ✅ Prevents infinite recursion
+	private CustomerDetail customerDetail;
 
-    @Column(name = "EffectiveDate")
-    private LocalDate effectiveDate;
-
-	public Integer getId() {
+	// Getters and Setters
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public CustomerDetail getCustomerDetail() {
-		return customerDetail;
-	}
-
-	public void setCustomerDetail(CustomerDetail customerDetail) {
-		this.customerDetail = customerDetail;
 	}
 
 	public String getCustomerIdentificationType() {
@@ -63,13 +47,11 @@ public class CustomerIdentification {
 		this.customerIdentificationItem = customerIdentificationItem;
 	}
 
-	public LocalDate getEffectiveDate() {
-		return effectiveDate;
+	public CustomerDetail getCustomerDetail() {
+		return customerDetail;
 	}
 
-	public void setEffectiveDate(LocalDate effectiveDate) {
-		this.effectiveDate = effectiveDate;
+	public void setCustomerDetail(CustomerDetail customerDetail) {
+		this.customerDetail = customerDetail;
 	}
-
-   
 }
