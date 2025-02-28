@@ -1,13 +1,12 @@
 package com.b1.demo.service;
-import com.b1.demo.entity.CustomerProofOfID;
-import com.b1.demo.repository.CustomerProofOfIDRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.b1.demo.entity.CustomerDetail;
-import com.b1.demo.repository.CustomerDetailRepository;
+import com.b1.demo.entity.CustomerProofOfID;
+import com.b1.demo.repository.CustomerProofOfIDRepository;
 
-import java.util.List;
 @Service
 public class CustomerProofOfIDService {
     @Autowired

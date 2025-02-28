@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 public class User {
  @Id
  @GeneratedValue(strategy = GenerationType.IDENTITY)
+ private Long id;
 private String name;
 private String password;
-
+private int amount;
+private int bankId;
 
 // Getters and Setters
 
@@ -26,6 +28,30 @@ public void setName(String name) {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public int getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(int bankId) {
+        this.bankId = bankId;
     }
 
 
