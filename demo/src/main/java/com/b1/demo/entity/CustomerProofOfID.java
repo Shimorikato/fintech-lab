@@ -1,6 +1,8 @@
 package com.b1.demo.entity;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,20 +18,21 @@ public class CustomerProofOfID {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private CustomerDetail customer;
-
+    @JsonBackReference
+    private CustomerDetail customerDetail;
+    
     private String proofOfIDType;
     private String proofOfIDValue;
     private LocalDate effectiveDate;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    public CustomerDetail getCustomer() {
-        return customer;
+    public CustomerDetail retrieveCustomer() {  // Renamed method
+        return customerDetail;
     }
-
-    public void setCustomer(CustomerDetail customer) {
-        this.customer = customer;
+    
+    public void setCustomer(CustomerDetail customerDetail) {
+        this.customerDetail = customerDetail;
     }
 
     public LocalDate getEffectiveDate() {

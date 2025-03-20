@@ -35,7 +35,16 @@ public class CustomerDetail {
     @JsonManagedReference 
      @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerIdentification> identifications;
-    
+
+    // One-to-Many relationship with CustomerContactInformation
+    @JsonManagedReference
+    @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerContactInformation> contactInformation;  
+
+    // One-to-Many relationship with CustomerProofOfID
+    @JsonManagedReference
+    @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerProofOfID> proofOfIdentifications;  
 
     // Getters and Setters...
 
@@ -102,4 +111,21 @@ public class CustomerDetail {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-}
+
+    public List<CustomerContactInformation> getContactInformation() {
+        return contactInformation;
+    }
+
+    public void addContactInformation(CustomerContactInformation contactInfo) {
+        contactInfo.setCustomerDetail(this);  // ✅ Ensures the contact info is linked to the customer
+        this.contactInformation.add(contactInfo);
+    }
+
+    public List<CustomerProofOfID> getProofOfIdentifications() {
+        return proofOfIdentifications;
+    }
+
+    public void setProofOfIdentifications(List<CustomerProofOfID> proofOfIdentifications) {
+        this.proofOfIdentifications = proofOfIdentifications;
+    }
+}  

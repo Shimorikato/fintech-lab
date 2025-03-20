@@ -1,22 +1,44 @@
 package com.b1.demo.entity;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 @Entity
+@Table(name = "customer_contact_information")
 public class CustomerContactInformation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private CustomerDetail customer;
-
     private String contactType;
     private String contactValue;
+    private LocalDate effectiveDate;
+    private LocalDate endDate;
+    private LocalDate startDate;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)  // ✅ Ensures a valid customer reference
+    @JsonBackReference
+    private CustomerDetail customerDetail;
+     
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getContactType() {
         return contactType;
@@ -32,14 +54,6 @@ public class CustomerContactInformation {
 
     public void setContactValue(String contactValue) {
         this.contactValue = contactValue;
-    }
-
-    public CustomerDetail getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(CustomerDetail customer) {
-        this.customer = customer;
     }
 
     public LocalDate getEffectiveDate() {
@@ -58,14 +72,6 @@ public class CustomerContactInformation {
         this.endDate = endDate;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -74,9 +80,13 @@ public class CustomerContactInformation {
         this.startDate = startDate;
     }
 
-    private LocalDate effectiveDate;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    public CustomerDetail getCustomerDetail() {  
+        return customerDetail;  
+    }  
+    
+    public void setCustomerDetail(CustomerDetail customerDetail) {  
+        this.customerDetail = customerDetail;  
+    }
 
-    // Getters and Setters
+    
 }

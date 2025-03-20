@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.b1.demo.entity.CustomerDetail;
 import com.b1.demo.repository.CustomerDetailRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CustomerDetailService {
 
@@ -39,9 +41,18 @@ public class CustomerDetailService {
             });
         }
     
+        // Handle customer contact information
+        if (customerDetail.getContactInformation() != null) {
+            customerDetail.getContactInformation().forEach(contactInfo -> {
+                contactInfo.setCustomerDetail(customerDetail);  // ✅ Ensuring association
+                contactInfo.setId(null); // Prevent detached entity issues
+            });
+        }
+    
         // Save the customer and return
         return customerDetailRepository.save(customerDetail);
     }
+    
     
 
     // ✅ Get all customers
@@ -50,10 +61,11 @@ public class CustomerDetailService {
     }
 
     // ✅ Get customer by ID
+    @Transactional  // ✅ Ensures related data is loaded
     public CustomerDetail getCustomerById(Long id) {
         return customerDetailRepository.findById(id).orElse(null);
     }
-
+    
     // ✅ Delete customer by ID
     public String deleteCustomer(Long id) {
         return customerDetailRepository.findById(id).map(existingCustomer -> {

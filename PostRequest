@@ -1,0 +1,46 @@
+{
+  "firstName": "John",
+  "middleName": "Michael",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "123-456-7890",
+  "addresses": [
+    {
+      "effectiveDate": "2025-03-20",
+      "customerAddressType": "Home",
+      "customerAddressValue": "Primary Residence",
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10001",
+      "country": "USA"
+    }
+  ],
+  "identifications": [
+    {
+      "customerIdentificationItem": "SSN",
+      "customerIdentificationType": "Government ID",
+      "effectiveDate": "2025-03-20",
+      "customerIdentifier": "123-45-6789"
+    }
+  ],
+  "contactInformation": [
+    {
+      "contactType": "Mobile",
+      "contactValue": "+1-123-456-7890",
+      "startDate": "2025-03-20",
+      "endDate": "2026-03-20",
+      "effectiveDate": "2025-03-20"
+    }
+  ],
+"proofOfIdentifications": [
+  {
+    "proofOfIDType": "Passport",
+    "proofOfIDValue": "AB1234567",
+    "startDate": "2024-01-01",
+    "endDate": "2034-01-01",
+    "effectiveDate": "2025-03-20"
+  }
+]
+
+}
