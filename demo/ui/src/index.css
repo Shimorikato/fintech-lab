@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@import 'tailwindcss'; 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --aurora-purple: #2E1A47;
+  --aurora-blue: #16213E;
+  --aurora-teal: #A3D5E0;
+  --aurora-pink: #EAB8E4;
+  --aurora-yellow: #F9C74F;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  @apply transition-colors duration-300 overflow-hidden;
+}
+
+.dark {
+  @apply bg-gray-900 text-white;
+}
+
+.light {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.aurora-gradient {
+  background: linear-gradient(135deg, var(--aurora-blue), var(--aurora-purple));
+}
+
+.aurora-card {
+  @apply relative overflow-hidden rounded-xl;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.aurora-glow {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  top: -25%;
+  left: -25%;
+  background: radial-gradient(
+    circle,
+    rgba(163, 213, 224, 0.2) 0%,
+    rgba(234, 184, 228, 0.2) 25%,
+    rgba(249, 199, 79, 0.2) 50%,
+    rgba(46, 26, 71, 0.2) 75%,
+    rgba(22, 33, 62, 0.2) 100%
+  );
+  filter: blur(60px);
+  opacity: 0.5;
+  animation: aurora-shift 15s ease infinite;
+  z-index: -1;
+}
+
+@keyframes aurora-shift {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.form-input {
+  @apply w-full px-4 py-2 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300;
+}
+
+.btn-primary {
+  @apply px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply px-6 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300;
+}
+
+.page-transition {
+  @apply transition-all duration-500 ease-in-out;
+}
+
+.slide-in {
+  animation: slide-in 0.5s forwards;
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -27,11 +27,13 @@ public class CustomerProofOfID {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    public CustomerDetail retrieveCustomer() {  // Renamed method
+    // Fix getter/setter method names to match the field name (customerDetail)
+    // This will resolve JPA mapping issues
+    public CustomerDetail getCustomerDetail() {  // Changed from retrieveCustomer
         return customerDetail;
     }
     
-    public void setCustomer(CustomerDetail customerDetail) {
+    public void setCustomerDetail(CustomerDetail customerDetail) {  // Changed from setCustomer
         this.customerDetail = customerDetail;
     }
 
