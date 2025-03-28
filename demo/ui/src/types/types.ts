@@ -81,6 +81,8 @@ export type CustomerDetails = CustomerName & {
   identifications: Identification[];
   contactInformation: ContactInformation[];
   proofOfIdentifications: ProofOfIdentification[];
+  createdAt?: string; // Add this optional property
+  dateOfBirth?: string; // Also add this optional property
 };
 
 // Example customer data type

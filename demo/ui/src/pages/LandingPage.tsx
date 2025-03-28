@@ -2,10 +2,17 @@ import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import ThemeToggle from "../components/ThemeToggle";
 import { useEffect, useRef } from "react";
+import { useCustomer } from "../context/CustomerContext";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { clearCustomerDetails } = useCustomer();
+
+  // Clear any customer details when the landing page loads
+  useEffect(() => {
+    clearCustomerDetails();
+  }, [clearCustomerDetails]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -83,6 +90,12 @@ const LandingPage = () => {
     };
   }, []);
 
+  const handleAddCustomer = () => {
+    // Make sure to clear any existing data before navigating to the add customer page
+    clearCustomerDetails();
+    navigate("/customer-details");
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden dark:bg-gray-900 bg-gray-50">
       <canvas ref={canvasRef} className="absolute inset-0 z-0" />
@@ -132,7 +145,7 @@ const LandingPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="btn-secondary w-full"
-                onClick={() => navigate("/customer-details")}
+                onClick={handleAddCustomer}
               >
                 Add New Customer
               </motion.button>

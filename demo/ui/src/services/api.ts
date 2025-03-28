@@ -73,3 +73,70 @@ export const fetchCustomers = async (): Promise<CustomerDetails[]> => {
     throw error;
   }
 };
+
+export const deleteCustomer = async (customerId: number): Promise<{ success: boolean; message: string }> => {
+  try {
+    console.log(`Deleting customer with ID: ${customerId}`);
+    
+    const response = await fetch(`/api/customers/delete/${customerId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Server error response:', errorData);
+      console.error('Response status:', response.status);
+      
+      return { 
+        success: false, 
+        message: `Failed to delete customer (${response.status}): ${errorData || 'Unknown error'}` 
+      };
+    }
+
+    return { success: true, message: 'Customer deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting customer:', error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : 'Unknown error occurred' 
+    };
+  }
+};
+
+export const updateCustomerDetails = async (
+  customerId: number,
+  customerDetails: CustomerDetails
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    console.log(`Updating customer ${customerId} with details:`, customerDetails);
+    
+    const response = await fetch(`/api/customers/update/${customerId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(customerDetails),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Server error response:', errorData);
+      
+      return { 
+        success: false, 
+        message: `Server error (${response.status}): ${errorData || 'Failed to update customer'}` 
+      };
+    }
+
+    return { success: true, message: 'Customer updated successfully' };
+  } catch (error) {
+    console.error('Error updating customer:', error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : 'Unknown error occurred' 
+    };
+  }
+};

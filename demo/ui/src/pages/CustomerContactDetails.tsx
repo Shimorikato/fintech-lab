@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Layout from "../components/Layout";
 import AuroraCard from "../components/AuroraCard";
@@ -38,6 +38,34 @@ const CustomerContactDetails = () => {
     phoneNumber?: string;
     contactValue?: string;
   }>({});
+
+  useEffect(() => {
+    if (customerDetails) {
+      setFormData({
+        email: customerDetails.email || "",
+        phoneNumber: customerDetails.phoneNumber || "",
+        contactInfo: {
+          id: customerDetails.contactInformation?.[0]?.id || 0,
+          contactType:
+            customerDetails.contactInformation?.[0]?.contactType || "Mobile",
+          contactValue:
+            customerDetails.contactInformation?.[0]?.contactValue || "",
+          startDate:
+            customerDetails.contactInformation?.[0]?.startDate?.split("T")[0] ||
+            new Date().toISOString().split("T")[0],
+          endDate:
+            customerDetails.contactInformation?.[0]?.endDate?.split("T")[0] ||
+            new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+              .toISOString()
+              .split("T")[0],
+          effectiveDate:
+            customerDetails.contactInformation?.[0]?.effectiveDate?.split(
+              "T"
+            )[0] || new Date().toISOString().split("T")[0],
+        },
+      });
+    }
+  }, [customerDetails]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

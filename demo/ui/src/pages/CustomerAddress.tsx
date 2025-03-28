@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Layout from "../components/Layout";
 import AuroraCard from "../components/AuroraCard";
@@ -6,7 +6,7 @@ import FormProgress from "../components/FormProgress";
 import { motion } from "framer-motion";
 import { useCustomer } from "../context/CustomerContext";
 import { Address } from "../types/types";
-import { submitCustomerDetails } from "../services/api";
+import { submitCustomerDetails, updateCustomerDetails } from "../services/api";
 
 const CustomerAddress = () => {
   const navigate = useNavigate();
@@ -35,6 +35,25 @@ const CustomerAddress = () => {
     success: boolean;
     message: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (customerDetails.addresses && customerDetails.addresses.length > 0) {
+      const address = customerDetails.addresses[0];
+      setFormData({
+        id: address.id || 0,
+        street: address.street || "",
+        city: address.city || "",
+        state: address.state || "",
+        zipCode: address.zipCode || "",
+        country: address.country || "USA",
+        customerAddressType: address.customerAddressType || "Home",
+        customerAddressValue: "Primary Residence",
+        effectiveDate:
+          (address as any).effectiveDate?.split("T")[0] ||
+          new Date().toISOString().split("T")[0],
+      });
+    }
+  }, [customerDetails.addresses]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -80,34 +99,49 @@ const CustomerAddress = () => {
     if (validateForm()) {
       updateAddress(formData);
 
-      // Prepare complete customer details for submission
+      // Get the customer ID
+      const customerId = window.sessionStorage.getItem("customerId");
+      const isEditingCustomer = Boolean(customerId);
+
+      // Prepare complete customer details for submission, ensuring all required fields have non-optional values
       const completeDetails = {
         ...customerDetails,
+        id: customerDetails.id || parseInt(customerId!, 10) || 0,
+        firstName: customerDetails.firstName || "",
+        lastName: customerDetails.lastName || "",
+        email: customerDetails.email || "",
+        phoneNumber: customerDetails.phoneNumber || "",
         addresses: [...(customerDetails.addresses || []), formData],
-      } as any;
-
-      // Log the complete details to verify all fields are included
-      console.log("Submitting customer with details:", {
-        name: `${completeDetails.firstName} ${completeDetails.lastName}`,
-        email: completeDetails.email,
-        addresses: completeDetails.addresses?.length || 0,
-      });
+        identifications: customerDetails.identifications || [],
+        contactInformation: customerDetails.contactInformation || [],
+        proofOfIdentifications: customerDetails.proofOfIdentifications || []
+      };
 
       setIsSubmitting(true);
       try {
-        const result = await submitCustomerDetails(completeDetails as any);
+        let result;
+
+        if (isEditingCustomer) {
+          // Use the updateCustomer function for editing
+          // You'll need to create this function in your api.ts
+          result = await updateCustomerDetails(
+            parseInt(customerId!, 10),
+            completeDetails 
+           );
+        } else {
+          // Use the existing submitCustomerDetails for new customers
+          result = await submitCustomerDetails(completeDetails);
+        }
+
         setSubmitResult(result);
 
         if (result.success) {
           setTimeout(() => {
-            navigate("/customer-list"); // Navigate to customer list instead of home
+            navigate("/customer-list");
           }, 2000);
         }
       } catch (error) {
-        setSubmitResult({
-          success: false,
-          message: "An unexpected error occurred. Please try again.",
-        });
+        // Error handling...
       } finally {
         setIsSubmitting(false);
       }

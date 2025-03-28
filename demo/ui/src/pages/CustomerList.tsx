@@ -3,57 +3,82 @@ import { useNavigate } from "react-router";
 import Layout from "../components/Layout";
 import AuroraCard from "../components/AuroraCard";
 import { motion } from "framer-motion";
-// import { CustomerDetails } from "../types/types";
+import { deleteCustomer, fetchCustomers } from "../services/api";
+import { CustomerDetails } from "../types/types";
+import { useCustomer } from "../context/CustomerContext";
 
 const CustomerListScreen = () => {
   const navigate = useNavigate();
-  const [customers, setCustomers] = useState([]);
+  const { setCustomerDetails } = useCustomer();
+  const [customers, setCustomers] = useState<CustomerDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteStatus, setDeleteStatus] = useState<{
+    message: string;
+    isError: boolean;
+  } | null>(null);
+
+  // Function to load customers
+  const loadCustomers = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching customers...");
+      const data = await fetchCustomers();
+      console.log("Customer data received:", data);
+      setCustomers(data);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        console.log("Fetching customers...");
-        const response = await fetch("/api/customers", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error("Server error:", errorData);
-          throw new Error(`Error ${response.status}: ${errorData}`);
-        }
-
-        const data = await response.json();
-        console.log("Customer data received:", data);
-
-        // Check if each customer has the expected fields
-        data.forEach((customer: any, index: number) => {
-          console.log(`Customer ${index + 1}:`, {
-            id: customer.id,
-            name: `${customer.firstName || "[missing]"} ${
-              customer.lastName || "[missing]"
-            }`,
-            email: customer.email || "[missing]",
-            hasName: Boolean(customer.firstName && customer.lastName),
-            hasEmail: Boolean(customer.email),
-          });
-        });
-
-        setCustomers(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching customers:", error);
-        setError(error instanceof Error ? error.message : "An error occurred");
-        setLoading(false);
-      }
-    };
-
-    fetchCustomers();
+    loadCustomers();
   }, []);
+
+  // Function to handle customer delete
+  const handleDeleteCustomer = async (customerId: number) => {
+    try {
+      const result = await deleteCustomer(customerId);
+
+      if (result.success) {
+        setDeleteStatus({ message: result.message, isError: false });
+        // Refresh customer list after successful deletion
+        loadCustomers();
+      } else {
+        setDeleteStatus({ message: result.message, isError: true });
+      }
+
+      // Clear the status message after 3 seconds
+      setTimeout(() => {
+        setDeleteStatus(null);
+      }, 3000);
+    } catch (error) {
+      setDeleteStatus({
+        message:
+          error instanceof Error ? error.message : "Failed to delete customer",
+        isError: true,
+      });
+    }
+  };
+
+  // Function to handle customer view
+  const handleViewCustomer = (customer: CustomerDetails) => {
+    navigate(`/customer-view/${customer.id}`);
+  };
+
+  // Function to handle customer edit
+  const handleEditCustomer = (customer: CustomerDetails) => {
+    // Store the customer details in the context
+    setCustomerDetails(customer);
+    // Also store the ID in session storage for consistency
+    window.sessionStorage.setItem("customerId", customer.id.toString());
+    // Navigate to the edit form
+    navigate(`/customer-details/${customer.id}`);
+  };
 
   return (
     <Layout title="Customer List" backLink="/">
@@ -71,6 +96,20 @@ const CustomerListScreen = () => {
             Add New Customer
           </motion.button>
         </div>
+
+        {deleteStatus && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`p-4 mb-4 rounded-md ${
+              deleteStatus.isError
+                ? "bg-red-100 text-red-700"
+                : "bg-green-100 text-green-700"
+            }`}
+          >
+            {deleteStatus.message}
+          </motion.div>
+        )}
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -132,40 +171,32 @@ const CustomerListScreen = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                  {customers.map((customer: any) => (
+                  {customers.map((customer: CustomerDetails) => (
                     <tr
                       key={customer.id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
                     >
                       <td
                         className="px-6 py-4 whitespace-nowrap"
-                        onClick={() =>
-                          navigate(`/customer-details/${customer.id}`)
-                        }
+                        onClick={() => handleViewCustomer(customer)}
                       >
                         {customer.firstName} {customer.lastName}
                       </td>
                       <td
                         className="px-6 py-4 whitespace-nowrap"
-                        onClick={() =>
-                          navigate(`/customer-details/${customer.id}`)
-                        }
+                        onClick={() => handleViewCustomer(customer)}
                       >
                         {customer.email}
                       </td>
                       <td
                         className="px-6 py-4 whitespace-nowrap"
-                        onClick={() =>
-                          navigate(`/customer-details/${customer.id}`)
-                        }
+                        onClick={() => handleViewCustomer(customer)}
                       >
                         {customer.phoneNumber || "N/A"}
                       </td>
                       <td
-                        className="px-6 py-4 whitespace-nowrap"
-                        onClick={() =>
-                          navigate(`/customer-details/${customer.id}`)
-                        }
+                        className="px-6 py-4 whitespace-wrap"
+                        onClick={() => handleViewCustomer(customer)}
                       >
                         {customer.addresses && customer.addresses.length > 0
                           ? `${customer.addresses[0].street}, ${customer.addresses[0].city}`
@@ -173,21 +204,18 @@ const CustomerListScreen = () => {
                       </td>
                       <td
                         className="px-6 py-4 whitespace-nowrap"
-                        onClick={() =>
-                          navigate(`/customer-details/${customer.id}`)
-                        }
+                        onClick={() => handleViewCustomer(customer)}
                       >
                         {customer.createdAt
                           ? new Date(customer.createdAt).toLocaleDateString()
                           : new Date(customer.id).toLocaleDateString()}{" "}
-                        {/* Fallback to ID-based date */}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
-                          className="text-blue-500 hover:text-blue-700 mr-2"
+                          className="text-blue-500 hover:text-blue-700 mr-4"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/customer-details/${customer.id}`);
+                            handleEditCustomer(customer);
                           }}
                         >
                           Edit
@@ -197,11 +225,11 @@ const CustomerListScreen = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (
-                              confirm(
+                              window.confirm(
                                 "Are you sure you want to delete this customer?"
                               )
                             ) {
-                              // Add delete functionality here
+                              handleDeleteCustomer(customer.id);
                             }
                           }}
                         >

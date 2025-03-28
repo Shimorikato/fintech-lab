@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Layout from "../components/Layout";
 import AuroraCard from "../components/AuroraCard";
@@ -9,7 +9,12 @@ import { ProofOfIdentification, Identification } from "../types/types";
 
 const CustomerProofOfIdentity = () => {
   const navigate = useNavigate();
-  const { updateProofOfIdentification, updateIdentification } = useCustomer();
+  const { updateProofOfIdentification, updateIdentification, customerDetails } =
+    useCustomer();
+  const [isEditing] = useState(
+    Boolean(window.sessionStorage.getItem("customerId"))
+  );
+
   const [formData, setFormData] = useState<{
     proofOfID: ProofOfIdentification;
     identification: Identification & {
@@ -35,6 +40,62 @@ const CustomerProofOfIdentity = () => {
       customerIdentifier: "",
     },
   });
+
+  useEffect(() => {
+    if (isEditing) {
+      console.log("Pre-filling proof of ID form with:", customerDetails);
+
+      // Pre-fill proof of ID if available
+      if (
+        customerDetails.proofOfIdentifications &&
+        customerDetails.proofOfIdentifications.length > 0
+      ) {
+        const existingProof = customerDetails.proofOfIdentifications[0];
+        setFormData((prev) => ({
+          ...prev,
+          proofOfID: {
+            id: existingProof.id || 0,
+            proofOfIDType: existingProof.proofOfIDType || "Passport",
+            proofOfIDValue: existingProof.proofOfIDValue || "",
+            startDate:
+              existingProof.startDate?.split("T")[0] ||
+              new Date().toISOString().split("T")[0],
+            endDate:
+              existingProof.endDate?.split("T")[0] ||
+              new Date(new Date().setFullYear(new Date().getFullYear() + 10))
+                .toISOString()
+                .split("T")[0],
+            effectiveDate:
+              existingProof.effectiveDate?.split("T")[0] ||
+              new Date().toISOString().split("T")[0],
+          },
+        }));
+      }
+
+      // Pre-fill identification if available
+      if (
+        customerDetails?.identifications &&
+        customerDetails.identifications.length > 0
+      ) {
+        const existingId = customerDetails.identifications[0];
+        setFormData((prev) => ({
+          ...prev,
+          identification: {
+            id: existingId.id || 0,
+            customerIdentificationItem:
+              existingId.customerIdentificationItem || "SSN",
+            customerIdentificationType:
+              existingId.customerIdentificationType || "Government ID",
+            effectiveDate:
+              (existingId as any).effectiveDate?.split("T")[0] ||
+              new Date().toISOString().split("T")[0],
+            customerIdentifier: (existingId as any).customerIdentifier || "",
+          },
+        }));
+      }
+    }
+  }, [isEditing, customerDetails]);
+
   const [errors, setErrors] = useState<{
     proofOfIDValue?: string;
     customerIdentifier?: string;
@@ -90,30 +151,46 @@ const CustomerProofOfIdentity = () => {
     e.preventDefault();
 
     if (validateForm()) {
+      // Get the customer ID
+      const customerId = window.sessionStorage.getItem("customerId");
+      const customerIdNumber = customerId ? parseInt(customerId, 10) : null;
+
+      // Format dates properly - ensure it always returns a string
+      const formatDate = (date: string) => (date ? date.split("T")[0] : new Date().toISOString().split("T")[0]);
+
       // Convert string dates to proper format for backend
       const formattedProofOfID = {
         ...formData.proofOfID,
-        // Use null instead of undefined for new entities
-        id: 0,
-        // Ensure dates are in ISO format
-        startDate: formData.proofOfID.startDate,
-        endDate: formData.proofOfID.endDate,
-        effectiveDate: formData.proofOfID.effectiveDate,
+        // Use 0 as default for new entities instead of null to match the ProofOfIdentification type
+        id: isEditing && formData.proofOfID.id ? formData.proofOfID.id : 0,
+        // Format dates properly
+        startDate: formatDate(formData.proofOfID.startDate),
+        endDate: formatDate(formData.proofOfID.endDate),
+        effectiveDate: formatDate(formData.proofOfID.effectiveDate),
         // This is critical - the relationship field must be set
         customerDetail: {
-          id: window.sessionStorage.getItem("customerId") || null,
+          id: customerIdNumber || 0,
         },
       };
 
       const formattedIdentification = {
         ...formData.identification,
-        // Use null instead of undefined for new entities
-        id: 0,
+        // Use 0 as default for new entities instead of null to match the Identification type
+        id:
+          isEditing && formData.identification.id
+            ? formData.identification.id
+            : 0,
+        customerIdentifier: formData.identification.customerIdentifier,
+        // Format date properly
+        effectiveDate: formatDate(formData.identification.effectiveDate),
         // This is critical - the relationship field must be set
         customerDetail: {
-          id: window.sessionStorage.getItem("customerId") || null,
+          id: customerIdNumber || 0,
         },
       };
+
+      console.log("Submitting proof of ID:", formattedProofOfID);
+      console.log("Submitting identification:", formattedIdentification);
 
       updateProofOfIdentification(formattedProofOfID);
       updateIdentification(formattedIdentification);

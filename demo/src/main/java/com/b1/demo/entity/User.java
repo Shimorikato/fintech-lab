@@ -13,6 +13,36 @@ private String name;
 private String password;
 private long  amount;
 private int bankId;
+private String gender;
+private String Country;
+private int age;
+private String language;
+
+public String getLanguage() {
+    return language;
+}
+public void setLanguage(String language) {
+    this.language = language;
+}
+public String getGender() {
+    return gender;
+}
+public void setGender(String gender) {
+    this.gender = gender;
+}
+public String getCountry() {
+    return Country;
+}
+public void setCountry(String country) {
+    Country = country;
+}
+public int getAge() {
+    return age;
+}
+public void setAge(int age) {
+    this.age = age;
+}
+
 
 
 // Getters and Setters

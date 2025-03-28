@@ -19,13 +19,17 @@ public class CustomerDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String firstName;
     private String middleName;
     private String lastName;
     private String email;
     private String phoneNumber;
-
+    private String gender;
+    private String Country;
+    private int age;
+    private String language;
+    
     // One-to-Many relationship with CustomerAddress
     @JsonManagedReference 
     @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -45,6 +49,43 @@ public class CustomerDetail {
     @JsonManagedReference
     @OneToMany(mappedBy = "customerDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerProofOfID> proofOfIdentifications;  
+    
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getCountry() {
+        return Country;
+    }
+
+    public void setCountry(String country) {
+        Country = country;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setContactInformation(List<CustomerContactInformation> contactInformation) {
+        this.contactInformation = contactInformation;
+    }
+
 
     // Getters and Setters...
 

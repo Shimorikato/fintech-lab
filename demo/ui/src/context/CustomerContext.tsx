@@ -18,6 +18,22 @@ type CustomerContextType = {
   updateEmail: (email: string) => void;
   updatePhoneNumber: (phoneNumber: string) => void;
   resetCustomerDetails: () => void;
+  setCustomerDetails: (customer: Partial<CustomerDetails>) => void;
+  isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
+  clearCustomerDetails: () => void; // New method to clear the context
+};
+
+const initialCustomerDetails: CustomerDetails = {
+  id: 0,
+  firstName: "",
+  lastName: "",
+  email: "",
+  phoneNumber: "",
+  addresses: [],
+  identifications: [],
+  contactInformation: [],
+  proofOfIdentifications: [],
 };
 
 const CustomerContext = createContext<CustomerContextType | undefined>(
@@ -33,42 +49,55 @@ export const useCustomer = () => {
 };
 
 export const CustomerProvider = ({ children }: { children: ReactNode }) => {
-  const [customerDetails, setCustomerDetails] = useState<
+  const [customerDetails, setCustomerDetailsState] = useState<
     Partial<CustomerDetails>
-  >({
-    addresses: [],
-    identifications: [],
-    contactInformation: [],
-    proofOfIdentifications: [],
-  });
+  >(initialCustomerDetails);
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const setCustomerDetails = (customer: Partial<CustomerDetails>) => {
+    if (customer.id) {
+      setIsEditing(true);
+      window.sessionStorage.setItem("customerId", customer.id.toString());
+    }
+
+    const customerWithArrays = {
+      ...customer,
+      addresses: customer.addresses || [],
+      identifications: customer.identifications || [],
+      contactInformation: customer.contactInformation || [],
+      proofOfIdentifications: customer.proofOfIdentifications || [],
+    };
+    setCustomerDetailsState(customerWithArrays);
+  };
 
   const updateCustomerName = (name: CustomerName) => {
-    setCustomerDetails((prev) => ({ ...prev, ...name }));
+    setCustomerDetailsState((prev) => ({ ...prev, ...name }));
   };
 
   const updateAddress = (address: Address) => {
-    setCustomerDetails((prev) => ({
+    setCustomerDetailsState((prev) => ({
       ...prev,
       addresses: [...(prev.addresses || []), address],
     }));
   };
 
   const updateIdentification = (identification: Identification) => {
-    setCustomerDetails((prev) => ({
+    setCustomerDetailsState((prev) => ({
       ...prev,
       identifications: [...(prev.identifications || []), identification],
     }));
   };
 
   const updateContactInformation = (contactInfo: ContactInformation) => {
-    setCustomerDetails((prev) => ({
+    setCustomerDetailsState((prev) => ({
       ...prev,
       contactInformation: [...(prev.contactInformation || []), contactInfo],
     }));
   };
 
   const updateProofOfIdentification = (proofOfId: ProofOfIdentification) => {
-    setCustomerDetails((prev) => ({
+    setCustomerDetailsState((prev) => ({
       ...prev,
       proofOfIdentifications: [
         ...(prev.proofOfIdentifications || []),
@@ -78,21 +107,22 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateEmail = (email: string) => {
-    setCustomerDetails((prev) => ({ ...prev, email }));
+    setCustomerDetailsState((prev) => ({ ...prev, email }));
   };
 
   const updatePhoneNumber = (phoneNumber: string) => {
-    setCustomerDetails((prev) => ({ ...prev, phoneNumber }));
+    setCustomerDetailsState((prev) => ({ ...prev, phoneNumber }));
   };
 
   const resetCustomerDetails = () => {
-    setCustomerDetails({
-      addresses: [],
-      identifications: [],
-      contactInformation: [],
-      proofOfIdentifications: [],
-    });
+    setCustomerDetailsState(initialCustomerDetails);
   };
+
+  const clearCustomerDetails = () => {
+    setCustomerDetailsState(initialCustomerDetails);
+    window.sessionStorage.removeItem("customerId");
+  };
+
   return (
     <CustomerContext.Provider
       value={{
@@ -105,6 +135,10 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
         updateEmail,
         updatePhoneNumber,
         resetCustomerDetails,
+        setCustomerDetails,
+        isEditing,
+        setIsEditing,
+        clearCustomerDetails,
       }}
     >
       {children}
