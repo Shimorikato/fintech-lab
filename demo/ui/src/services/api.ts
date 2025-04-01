@@ -1,5 +1,5 @@
 // api.ts
-import { CustomerDeails } from '../types/types';
+import { CustomerDetails } from '../types/types';
 
 export const submitCustomerDetails = async (customerDetails: CustomerDetails): Promise<{ success: boolean; message: string }> => {
   try {
